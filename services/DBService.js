@@ -4,7 +4,7 @@ class DBService {
         this.pool = null;
     }
 
-    _createPool() {
+     _createPool() {
         const config = {
             host: 'localhost',
             user: 'root',
@@ -13,21 +13,22 @@ class DBService {
 
         };
 
-        this.pool = mysql.createPool(config);
+         this.pool = mysql.createPool(config);
 
     }
 
-    execute(query, queryParams) {
-        return new Promise((resolve, reject) => {
-            if (this.pool === null) {
-                this._createPool();
+    async execute(query, queryParams) {
+        if (this.pool === null) {
+            this._createPool();
 
-            }
+        }
+
+        const rowsData = await new Promise ((resolve, reject) => {
             this.pool.query(query, queryParams, (err, rows) => {
-                !err ? resolve(rows) : reject(err);
+                !err ? resolve(rows) : reject(err); // check reject
             });
-
         });
-    }
+        return (rowsData);
+        }
 }
 module.exports = new DBService();
