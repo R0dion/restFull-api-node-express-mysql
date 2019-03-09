@@ -7,7 +7,7 @@ router.get('/', async (req, res) => {
     const getData = await userService.getAllEmploees();
     res.status(200).send(getData);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send(err.message);
   }
 
 });
@@ -17,7 +17,7 @@ router.get('/:id', async (req, res) => {
   const getData = await userService.getEmploeesById(req.params.id);
     res.status(200).send(getData);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send(err.message);
   }
 
 });
@@ -25,9 +25,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const postData = await userService.addEmploees(req.body);
-    res.status(201).send(postData);
+    res.status(201).json({message: 'Emploee was added', postData: postData});
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send(err.message);
   }
 
 });
@@ -36,10 +36,8 @@ router.delete('/:id', async (req, res) => {
   try {
     const deleteData = await userService.deleteEmploeesById(req.params.id);
       res.status(201).send(deleteData);
-
   } catch (err) {
-    res.status(500).send(err);
-
+    res.status(500).send(err.message);
   }
 
 });
@@ -50,7 +48,7 @@ router.put('/:id', async (req, res) => {
       res.status(201).send(putData);
 
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send(err.message);
   }
 
 });

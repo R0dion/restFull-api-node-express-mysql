@@ -17,18 +17,17 @@ class DBService {
 
     }
 
-    async execute(query, queryParams) {
-        if (this.pool === null) {
-            this._createPool();
+     execute(query, queryParams) {
+        return new Promise ((resolve, reject) => {
+            if (this.pool === null) {
+                this._createPool();
+            }
 
-        }
-
-        const rowsData = await new Promise ((resolve, reject) => {
             this.pool.query(query, queryParams, (err, rows) => {
-                !err ? resolve(rows) : reject(err); // check reject
+                    !err ? resolve(rows) : reject(err); // check reject
             });
+
         });
-        return (rowsData);
-        }
+    }
 }
 module.exports = new DBService();
