@@ -50,7 +50,7 @@ class UserService {
 
     _checkId(id) {
         const checkId = dataErrorService.isNumber(id);
-        if (checkId === true) {
+        if (checkId === false) {
             throw new Error('Id data type is incorrect');
         }
 

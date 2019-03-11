@@ -2,7 +2,7 @@ class DataErrorService {
 
     isNumber(id) {
         const checkedId = parseInt(id);
-        return isNaN(checkedId);
+        return !isNaN(checkedId);
     }
 
     isObject(body) {
