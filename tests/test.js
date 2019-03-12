@@ -1,7 +1,5 @@
 
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const should = chai.should();
 const expect = chai.expect;
 const sinon = require('sinon');
 // const sandbox = require('sinon').createSandbox();
@@ -117,11 +115,11 @@ describe('userService', () => {
       const executeStub = sinon.stub(DBService, 'execute').resolves({});
 
       const result = await userService.updateEmploeesById(body, id);
-      console.log(result);
 
       expect(checkIdStub.callCount).to.equal(1);
       expect(checkIdStub.withArgs(35).callCount).to.equal(1);
       expect(checkIdStub.calledOnce).to.be.true;
+      expect(checkBodyStub.calledOnce).to.be.true;
       expect(executeStub.callCount).to.equal(1, 'execute call not one time');
       expect(executeStub.calledWith('UPDATE emploees AS e SET e.name=?, e.mail=?, e.city=?, e.age=? WHERE id=?')).to.be.true;
       expect(result).to.be.an('object');
@@ -129,21 +127,38 @@ describe('userService', () => {
     });
 
   });
+
   describe('checkId', () => {
     it('it should check is id data is number', async () => {
       const id = 35;
 
       const isNumberStub = sinon.stub(dataErrorService, 'isNumber').returns(true);
 
-      const result = await dataErrorService.isNumber(id);
-      console.log(result);
+      const result = await userService._checkId(id);
 
       expect(isNumberStub.callCount).to.equal(1);
       expect(isNumberStub.withArgs(35).callCount).to.equal(1);
       expect(isNumberStub.calledOnce).to.be.true;
       expect(isNumberStub.callCount).to.equal(1, 'execute call not one time');
       expect(isNumberStub.calledWith(35)).to.be.true;
-      expect(result).to.be.true;
+
+    });
+    it('it should run error then id is not a number', async () => {
+      const id = '1';
+
+      const isNumberStub = sinon.stub(dataErrorService, 'isNumber').returns(false);
+      const checkIdStub = sinon.stub(userService, '_checkId').throws('Error', 'Id data type is incorrect');
+
+      try {
+        await userService._checkId(id);
+      } catch (e) {
+        expect(e.message).to.be.a('string').to.equal('Id data type is incorrect');
+
+        return 'Test Passed';
+      }
+      expect(isNumberStub).to.be.false;
+
+      throw new Error('Test Failed');
 
     });
 
@@ -169,10 +184,24 @@ describe('userService', () => {
       expect(result).to.be.true;
 
     });
+    it('it should throw then emploee data is undefined', async () => {
+      const data = undefined;
+
+      const checkDataStub = sinon.stub(userService, '_checkData').throws('Error', 'Emploee was not found');
+
+      try {
+        await userService._checkData(data);
+      } catch (e) {
+        expect(e.message).to.be.a('string').to.equal('Emploee was not found');
+        return 'Test Passed';
+      }
+      throw new Error('Test Failed');
+
+    });
 
   });
   describe('checkBody', () => {
-    it('it should check is data is an object', async () => {
+    it('it should check is body-data is an object', async () => {
       const body = {
         name: 'dima',
         mail: 'dima@gmail.com',
@@ -180,16 +209,30 @@ describe('userService', () => {
         age: 30
         };
 
-      const checkBodyStub = sinon.stub(userService, '_checkBody').returns(true);
+      const checkIsObjectStub = sinon.stub(dataErrorService, 'isObject').returns(true);
 
       const result = await userService._checkBody(body);
 
-      expect(checkBodyStub.callCount).to.equal(1);
-      expect(checkBodyStub.withArgs(body).callCount).to.equal(1);
-      expect(checkBodyStub.calledOnce).to.be.true;
-      expect(checkBodyStub.callCount).to.equal(1, 'execute call not one time');
-      expect(checkBodyStub.calledWith(body)).to.be.true;
-      expect(result).to.be.true;
+      expect(checkIsObjectStub.callCount).to.equal(1);
+      expect(checkIsObjectStub.withArgs(body).callCount).to.equal(1);
+      expect(checkIsObjectStub.calledOnce).to.be.true;
+      expect(checkIsObjectStub.callCount).to.equal(1, 'execute call not one time');
+      expect(checkIsObjectStub.calledWith(body)).to.be.true;
+
+    });
+    it('it should run error then body-data is not object', async () => {
+      const body = [];
+
+      const checkIsObjectStub = sinon.stub(dataErrorService, 'isObject').returns(false);
+      const checkBodyStub = sinon.stub(userService, '_checkId').throws('Error', 'Body  is not a object');
+
+      try {
+        await userService._checkBody(body);
+      } catch (e) {
+        expect(e.message).to.be.a('string').to.equal('Body  is not a object');
+        return 'Test Passed';
+      }
+      throw new Error('Test Failed');
 
     });
 

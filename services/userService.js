@@ -50,7 +50,7 @@ class UserService {
 
     _checkId(id) {
         const checkId = dataErrorService.isNumber(id);
-        if (checkId === false) {
+        if (checkId !== true) {
             throw new Error('Id data type is incorrect');
         }
 
@@ -65,7 +65,7 @@ class UserService {
 
     _checkBody(body) {
         const checkBody = dataErrorService.isObject(body);
-        if (checkBody === false) {
+        if (checkBody !== true) {
             throw new Error('Body  is not a object');
         }
     }
